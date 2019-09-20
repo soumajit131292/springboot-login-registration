@@ -8,13 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
+
 @Data
 @Entity
 @Table(name = "user_registration_details")
 public class UserDetailsForRegistration {
 
-	public UserDetailsForRegistration()
-	{}
+	public UserDetailsForRegistration() {
+	}
+
 	public UserDetailsForRegistration(Integer id, String firstName, String lastName, String mobileNumber, String email,
 			String gender, String password, String activeStatus) {
 		super();
@@ -27,9 +29,7 @@ public class UserDetailsForRegistration {
 		this.password = password;
 		this.activeStatus = activeStatus;
 	}
-	public UserDetailsForRegistration(String string, String string2, String string3, String string4, String string5,
-			String string6, String string7, String string8) {
-	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -43,9 +43,9 @@ public class UserDetailsForRegistration {
 	private String email;
 	@Column(name = "gender")
 	private String gender;
-	@Column(name="password")
+	@Column(name = "password")
 	private String password;
-	@Column(name="active_status")
+	@Column(name = "active_status")
 	private String activeStatus;
 
 }

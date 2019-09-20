@@ -1,0 +1,132 @@
+package com.bridgelabz.dao;
+
+import java.util.List;
+import javax.persistence.EntityManager;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.jboss.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import com.bridgelabz.model.LoginUser;
+import com.bridgelabz.model.UserDetailsForRegistration;
+
+@Repository
+public class UserDaoImpl implements UserDao {
+	private Logger logger = Logger.getLogger(this.getClass());
+	private EntityManager entityManager;
+
+	@Autowired
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+
+	@Autowired
+	private BCrypt bcryptEncoder;
+
+	@Transactional
+	public List<UserDetailsForRegistration> retriveUserDetails() {
+		Session currentSession = entityManager.unwrap(Session.class);
+		List<UserDetailsForRegistration> users = currentSession.createQuery("from UserDetailsForRegistration")
+				.getResultList();
+		return users;
+	}
+
+	@Transactional
+	public boolean isValidUser(String emailId) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		List<UserDetailsForRegistration> result = currentSession
+				.createQuery("from UserDetailsForRegistration where email='" + emailId + "'").getResultList();
+		System.out.println(result);
+		System.out.println(result.size());
+		//return (result.size() > 0) ? true : false;
+		if(result.size()>0)
+			return true;
+		return false;
+	}
+	
+	@Transactional
+	public boolean checkActiveStatus(String emailId) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		String activeStatus="true";
+		List<UserDetailsForRegistration> result = currentSession
+				.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'").getResultList();
+		System.out.println(result);
+		System.out.println(result.size());
+		//return (result.size() > 0) ? true : false;
+		if(result.size()>0)
+			return true;
+		return false;
+	}
+
+
+	@Transactional
+	public boolean deletFromDatabase(Integer userid) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		int status = 0;
+		String hql = "from UserDetailsForRegistration where id=:id";
+		Query query = currentSession.createQuery(hql);
+		query.setParameter("id", userid);
+		List<UserDetailsForRegistration> list = query.getResultList();
+		if (list.size() > 0)
+			status = currentSession.createQuery("delete from UserDetailsForRegistration where id='" + userid + "'")
+					.executeUpdate();
+		return (status > 0) ? true : false;
+
+	}
+
+	@Transactional
+	public void changeStatus(String emailId) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		String status = "true";
+		currentSession.createQuery(
+				"update UserDetailsForRegistration set activeStatus='" + status + "' where email='" + emailId + "'")
+				.executeUpdate();
+	}
+
+	@Transactional
+	public int setToDatabase(UserDetailsForRegistration userDetails) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		if (!isValidUser(userDetails.getEmail())) {
+			currentSession.save(userDetails);
+			return 1;
+}
+		return 0;
+	}
+
+	@Transactional
+	public int updateMobileNumberToDatabase(Integer id, UserDetailsForRegistration userDetails) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		return currentSession.createQuery("update UserDetailsForRegistration set mobileNumber='"
+				+ userDetails.getMobileNumber() + "' where id='" + id + "'").executeUpdate();
+	}
+
+	@Transactional
+	public boolean checkUser(LoginUser loginUser) {
+		String activeStatus = "true";
+		String password = loginUser.getPassword();
+		String email=loginUser.getEmail();
+		System.out.println(password);
+		Session currentSession = entityManager.unwrap(Session.class);
+		/*
+		 * List<UserDetailsForRegistration> list = currentSession .createQuery(
+		 * "from UserDetailsForRegistration e where e.password=password")
+		 * .getResultList(); /* List<UserDetailsForRegistration>
+		 * list=currentSession.createQuery("from UserDetailsForRegistration where
+		 * password=:password") .getResultList();
+		 */
+		System.out.println("in valid user loop + outside in login method");
+if(isValidUser(email)) {
+	System.out.println("in valid user loop");
+		String hql = "from UserDetailsForRegistration where password='" + loginUser.getPassword() + "'";
+		Query query = currentSession.createQuery(hql);
+		List<UserDetailsForRegistration> list = query.getResultList();
+		// System.out.println(list);
+		System.out.println(list.size());
+		return (list.size() > 0) ? true : false;
+}
+System.out.println("outside if loop");
+return false;
+	}
+}

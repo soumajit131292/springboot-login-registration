@@ -1,0 +1,11 @@
+package com.bridgelabz.exception;
+
+import lombok.Data;
+
+@Data
+public class ErrorResponse {
+
+	private int status;
+	private Long timeStamp;
+	private String message;
+}

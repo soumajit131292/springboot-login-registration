@@ -1,15 +1,18 @@
 package com.bridgelabz.dao;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import javax.persistence.EntityManager;
+
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bridgelabz.dto.UserDto;
 import com.bridgelabz.model.UserDetailsForRegistration;
 
 @Repository
@@ -33,56 +36,85 @@ public class UserDaoImpl implements UserDao {
 		return users;
 	}
 
-	
-	  @Transactional 
-	  public boolean isValidUser(String emailId) {
-		  Session
-	  currentSession = entityManager.unwrap(Session.class);
-		  int result=currentSession.createQuery("from UserDetailsForRegistration where email='"+ emailId+"'").executeUpdate(); 
-		   return (result>0)?true:false;
-	  }
-	 
 	@Transactional
-	public void deletFromDatabase(Integer userid) {
+	public boolean isValidUser(String emailId) {
 		Session currentSession = entityManager.unwrap(Session.class);
-		currentSession.createQuery("delete from UserDetailsForRegistration where id='" + userid + "'").executeUpdate();
-	}
-	
-	@Transactional
-	public void changeStatus(String emailId)
-	{
-		Session currentSession=entityManager.unwrap(Session.class);
-		String status="true";
-		currentSession.createQuery("update UserDetailsForRegistration set activeStatus='"+status+"'where email='"+emailId+"'").executeUpdate();
+		List<UserDetailsForRegistration> result = currentSession
+				.createQuery("from UserDetailsForRegistration where email='" + emailId + "'").getResultList();
+		System.out.println(result);
+		System.out.println(result.size());
+		// return (result.size() > 0) ? true : false;
+		if (result.size() > 0)
+			return true;
+		return false;
 	}
 
 	@Transactional
-	public List<UserDetailsForRegistration> checkPassword(Integer userid) {
+	public boolean checkActiveStatus(String emailId) {
 		Session currentSession = entityManager.unwrap(Session.class);
-		List<UserDetailsForRegistration> users = currentSession
-				.createQuery("from UserDetailsForRegistration where id='" + userid + "'").getResultList();
-		for (UserDetailsForRegistration details : users) {
-			String password = details.getPassword();
-			if (bcryptEncoder.checkpw("1234567", password)) {
-				logger.info("true");
-			}
-		}
-		return users;
+		String activeStatus = "true";
+		List<UserDetailsForRegistration> result = currentSession
+				.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'")
+				.getResultList();
+		System.out.println(result);
+		System.out.println(result.size());
+		// return (result.size() > 0) ? true : false;
+		if (result.size() > 0)
+			return true;
+		return false;
+	}
+
+	@Transactional
+	public boolean deletFromDatabase(Integer userid) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		int status = 0;
+		String hql = "from UserDetailsForRegistration where id=:id";
+		Query query = currentSession.createQuery(hql);
+		query.setParameter("id", userid);
+		List<UserDetailsForRegistration> list = query.getResultList();
+		if (list.size() > 0)
+			status = currentSession.createQuery("delete from UserDetailsForRegistration where id='" + userid + "'")
+					.executeUpdate();
+		return (status > 0) ? true : false;
+
+	}
+
+	@Transactional
+	public void changeStatus(String emailId) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		String status = "true";
+		currentSession.createQuery(
+				"update UserDetailsForRegistration set activeStatus='" + status + "' where email='" + emailId + "'")
+				.executeUpdate();
 	}
 
 	@Transactional
 	public int setToDatabase(UserDetailsForRegistration userDetails) {
 		Session currentSession = entityManager.unwrap(Session.class);
-		currentSession.save(userDetails);
-		return 1;
+		if (!isValidUser(userDetails.getEmail())) {
+			currentSession.save(userDetails);
+			return 1;
+		}
+		return 0;
 	}
 
 	@Transactional
 	public int updateMobileNumberToDatabase(Integer id, UserDetailsForRegistration userDetails) {
 		Session currentSession = entityManager.unwrap(Session.class);
-		// System.out.println(id+"in userdao");
-		logger.info("in userDaos");
 		return currentSession.createQuery("update UserDetailsForRegistration set mobileNumber='"
-				+ userDetails.getMobileNumber() + "'where id='" + id + "'").executeUpdate();
+				+ userDetails.getMobileNumber() + "' where id='" + id + "'").executeUpdate();
+	}
+
+	@Transactional
+	public List<UserDetailsForRegistration> checkUser(String email, String password) {
+		String activeStatus = "true";
+		List<UserDetailsForRegistration> result = new ArrayList<>();
+		Session currentSession = entityManager.unwrap(Session.class);
+		if (isValidUser(email)) {
+			result = currentSession
+					.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'")
+					.getResultList();
+		}
+		return result;
 	}
 }

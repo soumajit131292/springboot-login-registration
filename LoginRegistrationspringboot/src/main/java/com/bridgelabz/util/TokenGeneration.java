@@ -11,24 +11,16 @@ import com.auth0.jwt.interfaces.Verification;
 import com.bridgelabz.dto.UserDto;
 
 public class TokenGeneration {
-	private final long EXPIRATION_TIME = 3000;
+	private final long EXPIRATION_TIME = 9000;
 	private final String secret = "Soumajit";
 
 	public String generString(UserDto details) {
 		String email = details.getEmail();
-		String secret = "1234567890";
-		return JWT.create().withClaim("emailId", email).withIssuedAt(new Date(System.currentTimeMillis()))
-				.withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).sign(Algorithm.HMAC256(secret));
+		return JWT.create().withClaim("email", email).sign(Algorithm.HMAC512(secret));
 	}
 
 	public String parseToken(String token) {
-		Verification verification = null;
-		verification = JWT.require(Algorithm.HMAC256(secret));
-		JWTVerifier jwtVerifier = verification.build();
-		DecodedJWT decodeJWT = jwtVerifier.verify(token);
-		Claim claim = decodeJWT.getClaim("emailId");
-	
-		String emailId=claim.asString();
-		return emailId;
+		System.out.println("i am here");
+		return JWT.require(Algorithm.HMAC512(secret)).build().verify(token).getClaim("email").asString();
 	}
 }

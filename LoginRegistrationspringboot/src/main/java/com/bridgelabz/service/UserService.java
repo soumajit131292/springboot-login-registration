@@ -5,13 +5,14 @@ import java.util.List;
 import javax.mail.MessagingException;
 
 import com.bridgelabz.dto.UserDto;
+import com.bridgelabz.model.LoginUser;
 import com.bridgelabz.model.UserDetailsForRegistration;
 
 public interface UserService {
 
 	public List<UserDto> retriveUserFromDatabase();
 
-	public void deleteFromDatabase(Integer id);
+	public boolean deleteFromDatabase(Integer id);
 
 	public int saveToDatabase(UserDto userDetails) throws MessagingException;
 
@@ -20,6 +21,8 @@ public interface UserService {
 	public void sendEmail(UserDto userDetails) throws MessagingException;
 
 	public boolean verifyUser(String token);
+
+	boolean doLogin(LoginUser loginUser);
 
 
 

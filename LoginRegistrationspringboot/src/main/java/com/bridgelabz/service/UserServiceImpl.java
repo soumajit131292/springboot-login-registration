@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.bridgelabz.dao.UserDaoImpl;
 import com.bridgelabz.dto.UserDto;
+import com.bridgelabz.model.LoginUser;
 import com.bridgelabz.model.UserDetailsForRegistration;
 import com.bridgelabz.util.TokenGeneration;
 
@@ -53,14 +54,30 @@ public class UserServiceImpl implements UserService {
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 		helper.setTo("soumajit131292@gmail.com");
 		helper.setSubject("hello");
-		helper.setText("http://localhost:8080/verify/" + token.generString(details));
+		helper.setText("http://localhost:8080/api/verify/" + token.generString(details));
 		emailSender.send(message);
+	}
+
+	@Override
+	public boolean doLogin(LoginUser loginUser) {
+		String password = loginUser.getPassword();
+		String hashedPassword = hashPassword(password);
+		loginUser.setPassword(hashedPassword);
+		String email = loginUser.getEmail();
+
+		List<UserDetailsForRegistration> result = userdaoimpl.checkUser(email, hashedPassword);
+		for (UserDetailsForRegistration obj : result) {
+			return (bcryptEncoder.checkpw(password, obj.getPassword())) ? true : false;
+		}
+		return true;
 	}
 
 	@Override
 	public boolean verifyUser(String fromGeneratedToken) {
 		String emailId = token.parseToken(fromGeneratedToken);
+		System.out.println(emailId);
 		if (userdaoimpl.isValidUser(emailId)) {
+			System.out.println("user verified");
 			userdaoimpl.changeStatus(emailId);
 			return true;
 		} else {
@@ -82,8 +99,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteFromDatabase(Integer id) {
-		userdaoimpl.deletFromDatabase(id);
+	public boolean deleteFromDatabase(Integer id) {
+		if (userdaoimpl.deletFromDatabase(id))
+			return true;
+		return false;
 	}
 
 	public void changeActiveStatus(String emailId) {
@@ -94,9 +113,11 @@ public class UserServiceImpl implements UserService {
 	public int saveToDatabase(UserDto userDetails) throws MessagingException {
 		String password = userDetails.getPassword();
 		userDetails.setPassword(hashPassword(password));
-		userdaoimpl.setToDatabase(dtoToEntity(userDetails));
-		sendEmail(userDetails);
-		return 1;
+		if (userdaoimpl.setToDatabase(dtoToEntity(userDetails)) > 0) {
+			sendEmail(userDetails);
+			return 1;
+		}
+		return 0;
 		// return userDetails;
 	}
 

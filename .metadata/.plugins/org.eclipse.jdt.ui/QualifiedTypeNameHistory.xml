@@ -12,14 +12,12 @@
     <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
     <fullyQualifiedTypeName name="javax.persistence.EntityManager"/>
     <fullyQualifiedTypeName name="org.hibernate.Session"/>
-    <fullyQualifiedTypeName name="org.hibernate.query.Query"/>
     <fullyQualifiedTypeName name="org.springframework.transaction.annotation.Transactional"/>
     <fullyQualifiedTypeName name="com.bridgelabz.model.UserDto"/>
     <fullyQualifiedTypeName name="org.modelmapper.spi.MatchingStrategy"/>
     <fullyQualifiedTypeName name="org.modelmapper.convention.MatchingStrategies"/>
     <fullyQualifiedTypeName name="org.modelmapper.ModelMapper"/>
     <fullyQualifiedTypeName name="com.bridgelabz.model.UserDetailsForRegistration"/>
-    <fullyQualifiedTypeName name="java.util.Date"/>
     <fullyQualifiedTypeName name="io.jsonwebtoken.Jwts"/>
     <fullyQualifiedTypeName name="com.auth0.jwt.JWT"/>
     <fullyQualifiedTypeName name="com.auth0.jwt.algorithms.Algorithm"/>
@@ -30,4 +28,10 @@
     <fullyQualifiedTypeName name="com.auth0.jwt.interfaces.Claim"/>
     <fullyQualifiedTypeName name="com.auth0.jwt.JWTVerifier"/>
     <fullyQualifiedTypeName name="org.jboss.logging.Logger"/>
+    <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
+    <fullyQualifiedTypeName name="com.bridgelabz.exception.ErrorResponse"/>
+    <fullyQualifiedTypeName name="java.util.Date"/>
+    <fullyQualifiedTypeName name="org.apache.el.stream.Optional"/>
+    <fullyQualifiedTypeName name="java.util.Optional"/>
+    <fullyQualifiedTypeName name="org.hibernate.query.Query"/>
 </qualifiedTypeNameHistroy>

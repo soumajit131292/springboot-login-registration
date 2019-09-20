@@ -1,0 +1,13 @@
+package com.bridgelabz.exception;
+
+import java.time.LocalDateTime;
+
+import lombok.Data;
+
+@Data
+public class ErrorResponse {
+
+	private int status;
+	private Date timeStamp;
+	private String message;
+}
