@@ -1,0 +1,14 @@
+package com.bridgelabz.dto;
+
+import lombok.Data;
+
+@Data
+public class UserDto {
+
+	private String firstName;
+	private String lastName;
+	private String mobileNUmber;
+	private String gender;
+	private String email;
+	
+}

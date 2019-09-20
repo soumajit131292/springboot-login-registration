@@ -1,0 +1,18 @@
+package com.bridgelabz.dto;
+
+import lombok.Data;
+
+@Data
+public class UserDto {
+
+	public UserDto(String string, String string2, String string3, String string4, String string5, String string6) {
+		// TODO Auto-generated constructor stub
+	}
+	private String firstName;
+	private String lastName;
+	private String mobileNUmber;
+	private String gender;
+	private String email;
+	private String password;
+
+}

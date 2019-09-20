@@ -1,0 +1,16 @@
+package com.bridgelabz.config;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
+
+public class Configuration {
+
+	public ModelMapper modelMapper;
+
+	@Bean
+	public void setModelMapper(ModelMapper modelMapper) {
+		this.modelMapper = modelMapper;
+	}
+	
+
+}

@@ -1,0 +1,9 @@
+package com.bridgelabz.exception;
+@ControllerAdvice
+public class ExceptionHandler {
+
+	@ExceptionHandling
+	public String exception(Exception exception)
+	{}
+	
+}

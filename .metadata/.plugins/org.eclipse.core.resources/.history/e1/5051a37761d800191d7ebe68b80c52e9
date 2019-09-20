@@ -1,0 +1,11 @@
+package com.bridgelabz.dao;
+
+import java.util.List;
+
+import com.bridgelabz.model.UserDetailsForRegistration;
+
+public interface UserDao {
+	public List<UserDetailsForRegistration> retriveUserDetails();
+	public void setToDatabase(Integer userid);
+	public int deletFromDatabase(UserDetailsForRegistration userDetails);
+}

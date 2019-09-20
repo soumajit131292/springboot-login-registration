@@ -1,0 +1,24 @@
+package com.bridgelabz.util;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.auth0.jwt.JWT;
+
+import io.jsonwebtoken.Jwts;
+
+
+
+
+public class TokenGeneration {
+
+	private final long EXPIRATION_TIME=3000;
+	@Autowired
+	//JwtTokenUtil JWT;
+	//JwtToken JWT=new JwtToken();
+	public String generString(Login id) {
+		JWT.create().setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME));
+	
+	}
+}

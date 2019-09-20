@@ -1,0 +1,67 @@
+package com.bridgelabz.dao;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.bridgelabz.model.UserDetailsForRegistration;
+
+@Repository
+public class UserDaoImpl implements UserDao {
+	private EntityManager entityManager;
+
+	@Autowired
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+
+	
+	@Autowired
+	BCrypt bcryptEncoder;
+
+	@Transactional
+	public List<UserDetailsForRegistration> retriveUserDetails() {
+		Session currentSession = entityManager.unwrap(Session.class);
+		List<UserDetailsForRegistration> users = currentSession.createQuery("from UserDetailsForRegistration")
+				.getResultList();
+		return users;
+	}
+
+	/*@Transactional
+	public void deletFromDatabase(Integer userid) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		currentSession.createQuery("delete from UserDetailsForRegistration where id='" + userid + "'").executeUpdate();
+	}*/
+	@Transactional
+	public void deletFromDatabase(Integer userid) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		List<UserDetailsForRegistration> users=currentSession.createQuery("from UserDetailsForRegistration where id='" + userid + "'").getResultList();
+		//boolean check=
+	}
+	
+	@Transactional
+	public int setToDatabase(UserDetailsForRegistration userDetails) {
+		Session currentSession = entityManager.unwrap(Session.class);
+/*int insertion = currentSession.createQuery("insert into UserDetailsForRegistration ('"
+				+ userDetails.getFirstName() + "','" + userDetails.getLastName() + "','" + userDetails.getMobileNumber()
+				+ "','" + userDetails.getEmail() + "','" + userDetails.getGender() + "')").executeUpdate();
+		return insertion;*/
+		
+		currentSession.save(userDetails);
+		return 1;
+	}
+	@Transactional
+	public int updateMobileNumberToDatabase(Integer id, UserDetailsForRegistration userDetails) {
+		Session currentSession = entityManager.unwrap(Session.class);
+		System.out.println(id+"in userdao");
+		 return currentSession.createQuery("update UserDetailsForRegistration set mobileNumber='"+ userDetails.getMobileNumber() +"'where id='"+ id +"'").executeUpdate();
+     			
+	}
+}

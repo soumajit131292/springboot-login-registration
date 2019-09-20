@@ -1,0 +1,7 @@
+package com.bridgelabz.util;
+
+public class TokenGeneration {
+
+	//JwtToken JWT=new JwtToken();
+	JwtToken token=JWT.create().
+}

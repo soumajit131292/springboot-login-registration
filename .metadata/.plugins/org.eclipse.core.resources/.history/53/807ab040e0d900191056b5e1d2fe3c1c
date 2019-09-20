@@ -1,0 +1,11 @@
+package com.bridgelabz.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class TokenGeneration {
+
+	@Autowired
+	JWTToken JWT;
+	//JwtToken JWT=new JwtToken();
+	String generateToken=JWT.create().
+}

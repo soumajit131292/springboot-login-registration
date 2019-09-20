@@ -1,0 +1,17 @@
+package com.bridgelabz.service;
+
+import java.util.List;
+
+import com.bridgelabz.model.UserDetailsForRegistration;
+import com.bridgelabz.model.UserDto;
+
+public interface UserService {
+
+	public List<UserDetailsForRegistration> retriveUserFromDatabase();
+
+	public void deleteFromDatabase(Integer id);
+
+	public int saveToDatabase(UserDto userDetails);
+
+	public int updateUser(Integer id, UserDto userDetails);
+}
