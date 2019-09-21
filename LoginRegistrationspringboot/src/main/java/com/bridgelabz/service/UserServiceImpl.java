@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.dao.UserDaoImpl;
+import com.bridgelabz.dto.ResetPassword;
 import com.bridgelabz.dto.UserDto;
 import com.bridgelabz.model.LoginUser;
 import com.bridgelabz.model.UserDetailsForRegistration;
@@ -33,14 +34,15 @@ public class UserServiceImpl implements UserService {
 	private TokenGeneration token;
 
 	public UserDetailsForRegistration dtoToEntity(UserDto details) {
-		UserDetailsForRegistration userDetails = modelmapper.map(details, UserDetailsForRegistration.class);
-		return userDetails;
+		return modelmapper.map(details, UserDetailsForRegistration.class);
+	}
+
+	public UserDetailsForRegistration dtoToEntityForPasswordResey(ResetPassword details) {
+		return modelmapper.map(details, UserDetailsForRegistration.class);
 	}
 
 	public UserDto entityToDto(UserDetailsForRegistration details) {
-		UserDto userDetails = (modelmapper.map(details, UserDto.class));
-		System.out.println("hello in modelmapper");
-		return userDetails;
+		return (modelmapper.map(details, UserDto.class));
 	}
 
 	private String hashPassword(String plainTextPassword) {
@@ -49,26 +51,49 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendEmail(UserDto details) throws MessagingException {
+	public void sendEmail(String url, String generatedToken) throws MessagingException {
 		MimeMessage message = emailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 		helper.setTo("soumajit131292@gmail.com");
 		helper.setSubject("hello");
-		helper.setText("http://localhost:8080/api/verify/" + token.generString(details));
+		helper.setText(url + generatedToken);
 		emailSender.send(message);
 	}
 
 	@Override
 	public boolean doLogin(LoginUser loginUser) {
-		String password = loginUser.getPassword();
-		String hashedPassword = hashPassword(password);
-		loginUser.setPassword(hashedPassword);
 		String email = loginUser.getEmail();
+		List<UserDetailsForRegistration> result = userdaoimpl.checkUser(loginUser.getEmail());
+		return (bcryptEncoder.checkpw(loginUser.getPassword(), result.get(0).getPassword())) ? true : false;
 
-		List<UserDetailsForRegistration> result = userdaoimpl.checkUser(email, hashedPassword);
-		for (UserDetailsForRegistration obj : result) {
-			return (bcryptEncoder.checkpw(password, obj.getPassword())) ? true : false;
-		}
+		// List<UserDetailsForRegistration> result =
+		// userdaoimpl.checkUser(loginUser.getEmail());
+  /*  result.stream().filter(User->{return User!=null;}).map(
+    		details->{
+    			if(bcryptEncoder.checkpw(loginUser.getPassword(), details.getPassword())) {
+    				return true;
+    			}
+				return false;
+    		}
+	    	//System.out.println(details.getEmail());
+			//return (bcryptEncoder.checkpw(loginUser.getPassword(), details.getPassword())) ? true : false;
+	);
+
+		 System.out.println("outer map method");
+		 return true;*/
+		// return true;
+	}
+
+	@Override
+	public boolean isUserPresent(String email) {
+		return userdaoimpl.isValidUser(email);
+	}
+
+	@Override
+	public boolean forgotPassword(String emailId) throws MessagingException {
+		String generatedToken = token.generateToken(emailId);
+		String url = "";
+		sendEmail(url, generatedToken);
 		return true;
 	}
 
@@ -77,12 +102,10 @@ public class UserServiceImpl implements UserService {
 		String emailId = token.parseToken(fromGeneratedToken);
 		System.out.println(emailId);
 		if (userdaoimpl.isValidUser(emailId)) {
-			System.out.println("user verified");
 			userdaoimpl.changeStatus(emailId);
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	@Override
@@ -91,18 +114,14 @@ public class UserServiceImpl implements UserService {
 		List<UserDetailsForRegistration> details = userdaoimpl.retriveUserDetails();
 		for (UserDetailsForRegistration obj : details) {
 			UserDto abc = entityToDto(obj);
-			System.out.println(abc);
 			users.add(abc);
 		}
-		System.out.println(details);
 		return users;
 	}
 
 	@Override
 	public boolean deleteFromDatabase(Integer id) {
-		if (userdaoimpl.deletFromDatabase(id))
-			return true;
-		return false;
+		return (userdaoimpl.deletFromDatabase(id)) ? true : false;
 	}
 
 	public void changeActiveStatus(String emailId) {
@@ -112,17 +131,22 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public int saveToDatabase(UserDto userDetails) throws MessagingException {
 		String password = userDetails.getPassword();
+		String generatedToken = token.generateToken(userDetails.getEmail());
+		String url = "http://localhost:8080/api/verify/";
 		userDetails.setPassword(hashPassword(password));
 		if (userdaoimpl.setToDatabase(dtoToEntity(userDetails)) > 0) {
-			sendEmail(userDetails);
+			sendEmail(url, generatedToken);
 			return 1;
 		}
 		return 0;
-		// return userDetails;
 	}
 
 	@Override
-	public int updateUser(Integer id, UserDto userDetails) {
-		return userdaoimpl.updateMobileNumberToDatabase(id, dtoToEntity(userDetails));
+	public int updateUser(String generatedtoken, ResetPassword passwordReset) {
+		String emailId = token.parseToken(generatedtoken);
+		String encodePassword = hashPassword(passwordReset.getPassword());
+		System.out.println(encodePassword);
+		passwordReset.setPassword(encodePassword);
+		return userdaoimpl.updatePassword(emailId, dtoToEntityForPasswordResey(passwordReset));
 	}
 }

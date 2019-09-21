@@ -1,10 +1,7 @@
 package com.bridgelabz.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
-
 import javax.mail.MessagingException;
-
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.bridgelabz.dto.ResetPassword;
 import com.bridgelabz.dto.UserDto;
 import com.bridgelabz.exception.ErrorResponse;
 import com.bridgelabz.model.LoginUser;
@@ -47,6 +44,18 @@ public class UserRegistrationController {
 
 	}
 
+	@PostMapping("/forgot-password/{email}")
+	public ResponseEntity<ErrorResponse> forgotPassword(@PathVariable("email") String emailId,
+			@RequestBody ResetPassword userDetails) throws MessagingException {
+		if (userService.isUserPresent(emailId)) {
+			userService.forgotPassword(emailId);
+			return new ResponseEntity<>(new ErrorResponse(HttpStatus.OK.value(), "success"), HttpStatus.OK);
+		} else
+			return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "not verified"),
+					HttpStatus.BAD_REQUEST);
+
+	}
+
 	@GetMapping("/verify/{token}")
 	public ResponseEntity<ErrorResponse> verifyUserByMail(@PathVariable("token") String token) {
 		System.out.println("hello in verify");
@@ -69,9 +78,7 @@ public class UserRegistrationController {
 		} else {
 			return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "not logged in "),
 					HttpStatus.BAD_REQUEST);
-
 		}
-
 	}
 
 	@DeleteMapping("/deleteuser/{id}")
@@ -82,13 +89,12 @@ public class UserRegistrationController {
 			return new ResponseEntity<>(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "not found"),
 					HttpStatus.BAD_REQUEST);
 		}
-
 	}
 
-	@PutMapping("/updateuser/{id}")
-	public ResponseEntity<ErrorResponse> updateUser(@PathVariable("id") Integer id, @RequestBody UserDto userDetails) {
-		userService.updateUser(id, userDetails);
+	@PutMapping("/updateuser/{token}")
+	public ResponseEntity<ErrorResponse> updateUser(@PathVariable("token") String token,
+			@RequestBody ResetPassword userDetails) {
+		userService.updateUser(token, userDetails);
 		return new ResponseEntity<>(new ErrorResponse(HttpStatus.OK.value(), "success"), HttpStatus.OK);
-
 	}
 }

@@ -43,10 +43,7 @@ public class UserDaoImpl implements UserDao {
 				.createQuery("from UserDetailsForRegistration where email='" + emailId + "'").getResultList();
 		System.out.println(result);
 		System.out.println(result.size());
-		// return (result.size() > 0) ? true : false;
-		if (result.size() > 0)
-			return true;
-		return false;
+		return (result.size() > 0) ? true : false;
 	}
 
 	@Transactional
@@ -99,20 +96,20 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Transactional
-	public int updateMobileNumberToDatabase(Integer id, UserDetailsForRegistration userDetails) {
+	public int updatePassword(String emailId, UserDetailsForRegistration userDetails) {
 		Session currentSession = entityManager.unwrap(Session.class);
-		return currentSession.createQuery("update UserDetailsForRegistration set mobileNumber='"
-				+ userDetails.getMobileNumber() + "' where id='" + id + "'").executeUpdate();
+		return currentSession.createQuery("update UserDetailsForRegistration set password='" + userDetails.getPassword()
+				+ "' where email='" + emailId + "'").executeUpdate();
 	}
 
 	@Transactional
-	public List<UserDetailsForRegistration> checkUser(String email, String password) {
+	public List<UserDetailsForRegistration> checkUser(String email) {
 		String activeStatus = "true";
 		List<UserDetailsForRegistration> result = new ArrayList<>();
 		Session currentSession = entityManager.unwrap(Session.class);
 		if (isValidUser(email)) {
 			result = currentSession
-					.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'")
+					.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'and email='"+email+"'")
 					.getResultList();
 		}
 		return result;

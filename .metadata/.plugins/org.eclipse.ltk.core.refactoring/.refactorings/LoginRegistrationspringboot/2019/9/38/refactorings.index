@@ -4,3 +4,5 @@
 1568641566154	Rename type 'Configuration'
 1568720383183	Move compilation unit
 1568898590201	Delete element
+1569055649239	Rename type 'Password'
+1569056200154	Rename method 'updateMobileNumberToDatabase'

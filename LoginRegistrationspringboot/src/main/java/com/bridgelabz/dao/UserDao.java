@@ -8,5 +8,5 @@ public interface UserDao {
 	public List<UserDetailsForRegistration> retriveUserDetails();
 	public int setToDatabase(UserDetailsForRegistration userDetails);
 	public boolean deletFromDatabase(Integer userid);
-	public int updateMobileNumberToDatabase(Integer id, UserDetailsForRegistration userDetails);
+	public int updatePassword(String emailId, UserDetailsForRegistration userDetails);
 }
