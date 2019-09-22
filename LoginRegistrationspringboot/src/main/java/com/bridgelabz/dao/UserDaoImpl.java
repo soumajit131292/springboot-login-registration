@@ -41,8 +41,6 @@ public class UserDaoImpl implements UserDao {
 		Session currentSession = entityManager.unwrap(Session.class);
 		List<UserDetailsForRegistration> result = currentSession
 				.createQuery("from UserDetailsForRegistration where email='" + emailId + "'").getResultList();
-		System.out.println(result);
-		System.out.println(result.size());
 		return (result.size() > 0) ? true : false;
 	}
 
@@ -53,12 +51,7 @@ public class UserDaoImpl implements UserDao {
 		List<UserDetailsForRegistration> result = currentSession
 				.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'")
 				.getResultList();
-		System.out.println(result);
-		System.out.println(result.size());
-		// return (result.size() > 0) ? true : false;
-		if (result.size() > 0)
-			return true;
-		return false;
+		return (result.size() > 0) ? true : false;
 	}
 
 	@Transactional
@@ -108,9 +101,8 @@ public class UserDaoImpl implements UserDao {
 		List<UserDetailsForRegistration> result = new ArrayList<>();
 		Session currentSession = entityManager.unwrap(Session.class);
 		if (isValidUser(email)) {
-			result = currentSession
-					.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus + "'and email='"+email+"'")
-					.getResultList();
+			result = currentSession.createQuery("from UserDetailsForRegistration where activeStatus='" + activeStatus
+					+ "'and email='" + email + "'").getResultList();
 		}
 		return result;
 	}

@@ -65,23 +65,6 @@ public class UserServiceImpl implements UserService {
 		String email = loginUser.getEmail();
 		List<UserDetailsForRegistration> result = userdaoimpl.checkUser(loginUser.getEmail());
 		return (bcryptEncoder.checkpw(loginUser.getPassword(), result.get(0).getPassword())) ? true : false;
-
-		// List<UserDetailsForRegistration> result =
-		// userdaoimpl.checkUser(loginUser.getEmail());
-  /*  result.stream().filter(User->{return User!=null;}).map(
-    		details->{
-    			if(bcryptEncoder.checkpw(loginUser.getPassword(), details.getPassword())) {
-    				return true;
-    			}
-				return false;
-    		}
-	    	//System.out.println(details.getEmail());
-			//return (bcryptEncoder.checkpw(loginUser.getPassword(), details.getPassword())) ? true : false;
-	);
-
-		 System.out.println("outer map method");
-		 return true;*/
-		// return true;
 	}
 
 	@Override
@@ -100,7 +83,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean verifyUser(String fromGeneratedToken) {
 		String emailId = token.parseToken(fromGeneratedToken);
-		System.out.println(emailId);
 		if (userdaoimpl.isValidUser(emailId)) {
 			userdaoimpl.changeStatus(emailId);
 			return true;
@@ -145,7 +127,6 @@ public class UserServiceImpl implements UserService {
 	public int updateUser(String generatedtoken, ResetPassword passwordReset) {
 		String emailId = token.parseToken(generatedtoken);
 		String encodePassword = hashPassword(passwordReset.getPassword());
-		System.out.println(encodePassword);
 		passwordReset.setPassword(encodePassword);
 		return userdaoimpl.updatePassword(emailId, dtoToEntityForPasswordResey(passwordReset));
 	}
